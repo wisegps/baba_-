@@ -58,7 +58,7 @@ public class AirApi extends WiStormAPI{
 				break;
 				
 			case AirMsg.SET_AIR_SPEED_COMMAND:
-				Log.i("FragmentHomeAir", "净化器速度设置：" + msg.toString() );
+				parseSetAirSpeed(msg);
 				break;
 
 			}
@@ -82,6 +82,24 @@ public class AirApi extends WiStormAPI{
 			Bundle bundle = new Bundle();
 			bundle.putString("access_token", json.getString("access_token"));
 			bundle.putString("valid_time", json.getString("valid_time"));
+			uimsg.setData(bundle);
+			uiHandler.sendMessage(uimsg);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	/**
+	 * @param msg
+	 */
+	private void parseSetAirSpeed(Message msg){
+		try {
+			JSONObject json = new JSONObject(msg.obj.toString());
+			Message uimsg = uiHandler.obtainMessage();
+			uimsg.what = msg.what;
+			Bundle bundle = new Bundle();
+			bundle.putString("status_code", json.getString("status_code"));
 			uimsg.setData(bundle);
 			uiHandler.sendMessage(uimsg);
 		} catch (JSONException e) {
@@ -120,15 +138,10 @@ public class AirApi extends WiStormAPI{
 		
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("access_token", token);
-		
 		params.put("device_id", device_id);
-		
-		params.put("cmd_type", model);
-		
 		params.put("params", command);
-		
+		params.put("cmd_type", model);
 		String url = super.getUrl(Method_Set_Command, "", params);
-		
 		volley.request(url, AirMsg.SET_AIR_SPEED_COMMAND);
 	}
 	

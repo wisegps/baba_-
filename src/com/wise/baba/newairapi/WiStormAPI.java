@@ -156,10 +156,8 @@ public class WiStormAPI{
 
 		timestamp = getCurrentTime();
 	
-		timestamp = timestamp.replace(" ", "20%");
+		timestamp = timestamp.replace(" ", "%20");
 		Log.i("WiStormAPI", timestamp);
-//		timestamp =  encodeUTF(timestamp);
-//		;
 		
 		hashParam.put("timestamp", timestamp);
 		// 返回数据格式
@@ -189,21 +187,34 @@ public class WiStormAPI{
 		String s = raw(hashParam);
 		Log.i("LoginTest",s);
 		String sign = WEncrypt.MD5(appSecret + s + appSecret).toUpperCase();
-	
+		Log.i("LoginTest", "ddddd:==" + appSecret + s + appSecret);
 		Log.i("LoginTest", "sign:==" + sign);
 		return sign;
 	}
 
+	/**
+	 * @param value
+	 * @return
+	 */
 	private String encodeUTF(String value) {
 		
 		if(value.contains("@")){//如果没有这个 ，当帐号是邮箱的时候会出现 签名错误
+			return value;
+		}else if(value.contains("{air_speed:")){//冒号不用转
+			String str = "";
+			if(value.contains("1")){
+				str = Uri.encode("1}");
+			}else if(value.contains("2")){
+				str = Uri.encode("2}");
+			}else{
+				str = Uri.encode("3}");
+			}
+			value = Uri.encode("{air_speed") +  ":" + str; 
 			return value;
 		}else{
 			value = Uri.encode(value);
 			return value;
 		}
-		
-		
 	}
 
 	/**

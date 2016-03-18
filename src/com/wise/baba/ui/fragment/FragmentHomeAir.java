@@ -96,7 +96,7 @@ public class FragmentHomeAir extends Fragment {
 	
 	
 	private AirApi airApi;//净化器新接口、
-	private int air_speed_count = 0;
+	private int air_speed_count = 1;
 	private String device_id = "";
 
 	@Override
@@ -272,36 +272,23 @@ public class FragmentHomeAir extends Fragment {
 			case R.id.iv_air_level:
 				SwitchImageView ivLevel = (SwitchImageView) v;
 				ivLevel.setChecked(!ivLevel.isChecked());				
-				
-//				String speed = "";
-//				try
-//		        {
-//		            JSONObject object=new JSONObject();
-//		            object.put("switch",0);
-//		            speed = object.toString();
-//		        }
-//		        catch (Exception je)
-//		        {
-//		 
-//		        }
 
-				
 				device_id = app.carDatas.get(carIndex).getDevice_id();
 				Toast.makeText(getActivity(),  "click", Toast.LENGTH_SHORT).show();
 				
 
-				airApi.setAirSpeed(app.Token, device_id, HIGHT_SPEED, SPEED_COMMAND_MODEL);
 				
-//				if(air_speed_count == 1){
-//					
-//				}
-//				
-//				if(air_speed_count == 2){
-//					
-//				}
-//				if(air_speed_count == 3){
-//					
-//				}
+				
+				if(air_speed_count == 1){
+					airApi.setAirSpeed(app.Token, device_id, LOW_SPEED, SPEED_COMMAND_MODEL);
+				}
+				
+				if(air_speed_count == 2){
+					airApi.setAirSpeed(app.Token, device_id, MIDDLE_SPEED, SPEED_COMMAND_MODEL);
+				}
+				if(air_speed_count == 3){
+					airApi.setAirSpeed(app.Token, device_id, HIGHT_SPEED, SPEED_COMMAND_MODEL);
+				}
 				
 				
 				
@@ -526,8 +513,6 @@ public class FragmentHomeAir extends Fragment {
 	 * @param bundle
 	 */
 	public void refreshValue(Air air) {
-		
-//		Log.i("FragmentHomeAir", "refreshValue");
 		View view = views.get(pageIndex);
 		tvAirValue = (TextView) view.findViewById(R.id.tvAirscore);
 		TextView tvAirDesc = (TextView) view.findViewById(R.id.tvAirDesc);
@@ -550,7 +535,6 @@ public class FragmentHomeAir extends Fragment {
 		 */
 		int vSwitch = air.getAirSwitch();
 		boolean isChecked = (vSwitch == POWER_ON) ? true : false;
-//		Log.i("FragmentHomeAir", "开关控制: " + isChecked);
 		ivAirPower.setChecked(isChecked);
 		String modeDesc = getModeDesc(air.getAirMode());
 		tvModeDesc.setText(modeDesc);
@@ -627,7 +611,17 @@ public class FragmentHomeAir extends Fragment {
 				break;	
 				
 			case AirMsg.SET_AIR_SPEED_COMMAND:
-				Log.i(TAG, "设置速度返回信息：");
+				
+				Bundle bundle_air_speed = msg.getData();
+				String status_code = bundle_air_speed.getString("status_code");
+				Log.i(TAG, "设置速度返回信息status_code：" + status_code + "==" + air_speed_count);
+				if("0".equals(status_code)){
+					air_speed_count ++;
+					if(air_speed_count > 3){
+						air_speed_count = 1;
+					}
+				}
+				
 				break;
 
 			}
