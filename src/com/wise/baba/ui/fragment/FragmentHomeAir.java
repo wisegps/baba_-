@@ -75,7 +75,6 @@ public class FragmentHomeAir extends Fragment {
 	
 	public final static int POWER_ON = 1;
 	public final static int POWER_OFF = 0;
-//	int vSwitch = 0;
 
 	/** 获取gps信息 **/
 	private static final int get_gps = 10;
@@ -174,8 +173,6 @@ public class FragmentHomeAir extends Fragment {
 					app.carDatas.get(carIndex).setCar_city(adress);
 
 					httpWeather.requestWeather(adress);
-					// Log.e("百度地图反解析"," " + carIndex + "--->" +
-					// app.carDatas.get(carIndex).getCar_city());
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -238,7 +235,7 @@ public class FragmentHomeAir extends Fragment {
 				}else{
 					airApi.setAirCommand(app.Token, device_id, AirCommand.AIR_POWER_ON , AirCommand.SWITCH_COMMAND_MODEL);
 				}
-				Log.i("FragmentHomeAir", "点击电源: " + ivPower.isChecked());
+//				Log.i("FragmentHomeAir", "点击电源: " + ivPower.isChecked());
 				startAirAnimation(!isChecked);
 				break;
 			case R.id.iv_air_auto:
@@ -584,17 +581,15 @@ public class FragmentHomeAir extends Fragment {
 				break;	
 				
 			case AirMsg.SET_AIR_SPEED_COMMAND:
-				
 				Bundle bundle_air_speed = msg.getData();
 				String status_code = bundle_air_speed.getString("status_code");
-				Log.i(TAG, "设置速度返回信息status_code：" + status_code + "==" + air_speed_count);
+//				Log.i(TAG, "设置速度返回信息status_code：" + status_code + "==" + air_speed_count);
 				if("0".equals(status_code)){
 					air_speed_count ++;
 					if(air_speed_count > 3){
 						air_speed_count = 1;
 					}
 				}
-				
 				break;
 
 			}

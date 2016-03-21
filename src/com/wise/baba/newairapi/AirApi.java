@@ -5,10 +5,6 @@ import java.util.HashMap;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.wise.baba.AppApplication;
-import com.wise.baba.ui.fragment.FragmentHomeAir;
-
-import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -56,8 +52,7 @@ public class AirApi extends WiStormAPI{
 			
 			case AirMsg.GET_NEW_API_TOKEN:
 				parseToken(msg);
-				break;
-				
+				break;		
 			case AirMsg.SET_AIR_SPEED_COMMAND:
 				parseSetAirSpeed(msg);
 				break;
