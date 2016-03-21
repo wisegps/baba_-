@@ -3,9 +3,6 @@ package com.wise.baba.ui.fragment;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONObject;
-
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -46,6 +43,7 @@ import com.wise.baba.entity.Air;
 import com.wise.baba.entity.CarData;
 import com.wise.baba.entity.Weather;
 import com.wise.baba.newairapi.AirApi;
+import com.wise.baba.newairapi.AirCommand;
 import com.wise.baba.newairapi.AirMsg;
 import com.wise.baba.newairapi.BaseVolley;
 import com.wise.baba.ui.adapter.OnCardMenuListener;
@@ -77,15 +75,8 @@ public class FragmentHomeAir extends Fragment {
 	
 	public final static int POWER_ON = 1;
 	public final static int POWER_OFF = 0;
-	
-	public final static String LOW_SPEED    = "{air_speed:1}";
-	public final static String MIDDLE_SPEED = "{air_speed:2}";
-	public final static String HIGHT_SPEED  = "{air_speed:3}";
-	
-	public final static String SPEED_COMMAND_MODEL  = "16453";
-	public final static String SWITCH_COMMAND_MODEL = "16451";
-	
-	
+//	int vSwitch = 0;
+
 	/** 获取gps信息 **/
 	private static final int get_gps = 10;
 	public RotateAnimation rolateAnimation = null;
@@ -134,7 +125,6 @@ public class FragmentHomeAir extends Fragment {
 		
 					initLoaction(carIndex);
 					httpObd.requestAir(carIndex);
-
 				}
 			}
 		});
@@ -240,33 +230,25 @@ public class FragmentHomeAir extends Fragment {
 				}
 				break;
 			case R.id.iv_air_power:
-//				if (dpdy < 12) {
-//					String msg = getResources()
-//							.getString(R.string.air_low_dpdy);
-//					Toast.makeText(FragmentHomeAir.this.getActivity(), msg,
-//							Toast.LENGTH_SHORT).show();
-//					return;
-//				}
-
 				SwitchImageView ivPower = (SwitchImageView) v;
 				boolean isChecked = ivPower.isChecked();
-				ivPower.setChecked(!isChecked);
-				httpAir.setPower(app.carDatas.get(carIndex).getDevice_id(),
-						!isChecked);
-				Log.i("FragmentHomeAir", "点击电源: ");
+				ivPower.setChecked(!isChecked);			
+				if(ivPower.isChecked()){
+					airApi.setAirCommand(app.Token, device_id, AirCommand.AIR_POWER_OFF, AirCommand.SWITCH_COMMAND_MODEL);
+				}else{
+					airApi.setAirCommand(app.Token, device_id, AirCommand.AIR_POWER_ON , AirCommand.SWITCH_COMMAND_MODEL);
+				}
+				Log.i("FragmentHomeAir", "点击电源: " + ivPower.isChecked());
 				startAirAnimation(!isChecked);
-
 				break;
 			case R.id.iv_air_auto:
 				SwitchImageView ivAuto = (SwitchImageView) v;
 				ivAuto.setChecked(!ivAuto.isChecked());
-				int mode = Const.AIR_MODE_MANUL;
+				String air_mode = AirCommand.AIR_NORMAL_MODEL;
 				if (ivAuto.isChecked()) {
-					mode = Const.AIR_MODE_SMART;
+					air_mode = AirCommand.AIR_SMART_MODEL;
 				}
-
-				String deviceId = app.carDatas.get(carIndex).getDevice_id();
-				httpAir.setMode(deviceId, mode, "", 0);
+				airApi.setAirCommand(app.Token, device_id, air_mode , AirCommand.MODEL_SET_COMMAND_MODEL);
 				break;
 				
 			case R.id.iv_air_level:
@@ -275,28 +257,18 @@ public class FragmentHomeAir extends Fragment {
 
 				device_id = app.carDatas.get(carIndex).getDevice_id();
 				Toast.makeText(getActivity(),  "click", Toast.LENGTH_SHORT).show();
-				
 
-				
-				
 				if(air_speed_count == 1){
-					airApi.setAirSpeed(app.Token, device_id, LOW_SPEED, SPEED_COMMAND_MODEL);
+					airApi.setAirCommand(app.Token, device_id, AirCommand.LOW_SPEED, AirCommand.SPEED_COMMAND_MODEL);
 				}
 				
 				if(air_speed_count == 2){
-					airApi.setAirSpeed(app.Token, device_id, MIDDLE_SPEED, SPEED_COMMAND_MODEL);
+					airApi.setAirCommand(app.Token, device_id, AirCommand.MIDDLE_SPEED, AirCommand.SPEED_COMMAND_MODEL);
 				}
 				if(air_speed_count == 3){
-					airApi.setAirSpeed(app.Token, device_id, HIGHT_SPEED, SPEED_COMMAND_MODEL);
+					airApi.setAirCommand(app.Token, device_id, AirCommand.HIGHT_SPEED, AirCommand.SPEED_COMMAND_MODEL);
 				}
-				
-				
-				
-				
-				
-				
-				
-				
+
 				break;
 			case R.id.iv_air_setting:
 				Intent intent = new Intent();
@@ -534,6 +506,7 @@ public class FragmentHomeAir extends Fragment {
 		 * 开关控制
 		 */
 		int vSwitch = air.getAirSwitch();
+		Log.i("FragmentHomeAir", "开关状态: " + vSwitch);
 		boolean isChecked = (vSwitch == POWER_ON) ? true : false;
 		ivAirPower.setChecked(isChecked);
 		String modeDesc = getModeDesc(air.getAirMode());

@@ -6,6 +6,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.wise.baba.AppApplication;
+import com.wise.baba.ui.fragment.FragmentHomeAir;
 
 import android.app.Application;
 import android.content.Context;
@@ -60,7 +61,12 @@ public class AirApi extends WiStormAPI{
 			case AirMsg.SET_AIR_SPEED_COMMAND:
 				parseSetAirSpeed(msg);
 				break;
-
+			case AirMsg.SET_AIR_SWITCH_COMMAND:
+				Log.i("FragmentHomeAir", "控制开关返回信息: " + msg.toString());
+				break;
+			case AirMsg.SET_AIR_MODEL_COMMAND:
+				Log.i("FragmentHomeAir", "模式控制返回信息: " + msg.toString());
+				break;
 			}
 			return false;
 		}
@@ -127,22 +133,28 @@ public class AirApi extends WiStormAPI{
 	}
 	
 	
-
 	/**
 	 * @param token
 	 * @param device_id
-	 * @param speed    //{air_speed: 1}   //1: 低速， 2：中速  3：高速
-	 * @param control_model  //16452（控制模式）//16453 速度
+	 * @param command 
+	 * @param model   //16452（控制模式）//16453 速度
 	 */
-	public void setAirSpeed(String token,String device_id,String command,String model){
-		
+	public void setAirCommand(String token,String device_id,String command,String model){
+	
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("access_token", token);
 		params.put("device_id", device_id);
 		params.put("params", command);
 		params.put("cmd_type", model);
 		String url = super.getUrl(Method_Set_Command, "", params);
-		volley.request(url, AirMsg.SET_AIR_SPEED_COMMAND);
+		
+		if(model.equals(AirCommand.SPEED_COMMAND_MODEL)){
+			volley.request(url, AirMsg.SET_AIR_SPEED_COMMAND);
+		}else if(model.equals(AirCommand.SWITCH_COMMAND_MODEL)){
+			volley.request(url, AirMsg.SET_AIR_SWITCH_COMMAND);
+		}else if(model.equals(AirCommand.MODEL_SET_COMMAND_MODEL)){
+			volley.request(url, AirMsg.SET_AIR_MODEL_COMMAND);
+		}
 	}
 	
 

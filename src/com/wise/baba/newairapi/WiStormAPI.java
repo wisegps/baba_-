@@ -200,16 +200,11 @@ public class WiStormAPI{
 		
 		if(value.contains("@")){//如果没有这个 ，当帐号是邮箱的时候会出现 签名错误
 			return value;
-		}else if(value.contains("{air_speed:")){//冒号不用转
-			String str = "";
-			if(value.contains("1")){
-				str = Uri.encode("1}");
-			}else if(value.contains("2")){
-				str = Uri.encode("2}");
-			}else{
-				str = Uri.encode("3}");
-			}
-			value = Uri.encode("{air_speed") +  ":" + str; 
+		}else if(value.contains(":")){//冒号不用转
+			value = Uri.encode(value.substring(0,value.indexOf(":"))) +  ":" 
+					+ Uri.encode(value.substring(value.indexOf(":")+1,value.length()));
+			
+			Log.d("FragmentHomeAir", value);
 			return value;
 		}else{
 			value = Uri.encode(value);
