@@ -235,6 +235,8 @@ public class HttpGetObdData {
 
 			budle.putString("air_time", air_time);
 			
+			int airSpeed = jsonParams.optInt("air_speed");
+			budle.putInt("air_speed", airSpeed);
 			
 			Log.i("HttpGetData", "strSwitch "+vSwitch);
 		} catch (JSONException e) {

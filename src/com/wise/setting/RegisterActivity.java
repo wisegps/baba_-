@@ -329,8 +329,8 @@ public class RegisterActivity extends Activity {
 	}
 
 	private void setNote() {
-		SpannableString sp = new SpannableString("点击上面的注册按钮，即表示同意《叭叭软件许可及服务条款》");
-		sp.setSpan(new URLSpan("http://api.bibibaba.cn/help/fwtk"), 16, 27,
+		SpannableString sp = new SpannableString("点击上面的注册按钮，即表示同意《安全卫士软件许可及服务条款》");
+		sp.setSpan(new URLSpan("http://api.bibibaba.cn/help/fwtk"), 16, 29,
 				Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 		tv_note.setText(sp);
 		tv_note.setMovementMethod(LinkMovementMethod.getInstance());

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 黄色按钮 -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/ico_air_level_off" android:state_pressed="false"/>
+    <item android:drawable="@drawable/ico_air_level_on" android:state_pressed="true"/>
+</selector>

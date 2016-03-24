@@ -54,6 +54,7 @@ public class AirApi extends WiStormAPI{
 				parseToken(msg);
 				break;		
 			case AirMsg.SET_AIR_SPEED_COMMAND:
+				Log.i("FragmentHomeAir", "控制速度返回信息: " + msg.toString());
 				parseSetAirSpeed(msg);
 				break;
 			case AirMsg.SET_AIR_SWITCH_COMMAND:

@@ -156,7 +156,7 @@ public class WiStormAPI{
 
 		timestamp = getCurrentTime();
 	
-		timestamp = timestamp.replace(" ", "%20");
+		timestamp = timestamp.replace(" ", "20%");
 		Log.i("WiStormAPI", timestamp);
 		
 		hashParam.put("timestamp", timestamp);

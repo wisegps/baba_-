@@ -202,7 +202,8 @@
         <View
             android:layout_width="fill_parent"
             android:layout_height="0.5dp"
-            android:background="@color/gay_line" />
+            android:background="@color/gay_line"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/tv_about"
@@ -212,7 +213,8 @@
             android:padding="@dimen/double_margins"
             android:text="关于叭叭"
             android:textColor="@color/navy"
-            android:textSize="@dimen/content" />
+            android:textSize="@dimen/content"
+            android:visibility="gone" />
     </LinearLayout>
 
     <Button

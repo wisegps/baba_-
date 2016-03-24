@@ -1,18 +1,14 @@
 package com.wise.baba.ui.fragment;
 
 import java.io.Serializable;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -40,20 +36,15 @@ import com.baidu.mapapi.search.geocode.GeoCoder;
 import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
-import com.google.gson.Gson;
 import com.wise.baba.AppApplication;
 import com.wise.baba.R;
 import com.wise.baba.app.Const;
 import com.wise.baba.app.Constant;
 import com.wise.baba.app.Msg;
 import com.wise.baba.biz.GetSystem;
-import com.wise.baba.biz.GetUrl;
 import com.wise.baba.biz.HttpCarInfo;
-import com.wise.baba.entity.ActiveGpsData;
 import com.wise.baba.entity.CarData;
 import com.wise.baba.entity.CarView;
-import com.wise.baba.entity.GpsData;
-import com.wise.baba.net.NetThread;
 import com.wise.baba.ui.adapter.OnCardMenuListener;
 import com.wise.baba.ui.widget.DialView;
 import com.wise.baba.ui.widget.HScrollLayout;
@@ -753,6 +744,7 @@ public class FragmentCarInfo extends Fragment {
 	private void getDataOne(int type) {
 		if (app.carDatas != null && app.carDatas.size() != 0) {
 			String Device_id = app.carDatas.get(index).getDevice_id();
+			Log.i("FragmentHomeAir", Device_id);
 			if (Device_id == null || Device_id.equals("")) {
 				Intent intent = new Intent(getActivity(),
 						DevicesAddActivity.class);

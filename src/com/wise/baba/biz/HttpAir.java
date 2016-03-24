@@ -234,6 +234,7 @@ public class HttpAir {
 
 		int airValue = 0;
 		int airSwitch = 0, airDuration = 0, airMode = 0;
+		int air_speed=0;
 		String airTime = "";
 
 		try {
@@ -245,6 +246,7 @@ public class HttpAir {
 			airMode = params.optInt("air_mode");
 			airTime = params.optString("air_time");
 			airDuration = params.optInt("air_duration");
+			air_speed = params.optInt("air_speed");
 
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -255,6 +257,7 @@ public class HttpAir {
 		mAir.setAirMode(airMode);
 		mAir.setAirDuration(airDuration);
 		mAir.setAirTime(airTime);
+		mAir.setAirSpeed(air_speed);
 		return mAir;
 
 	}

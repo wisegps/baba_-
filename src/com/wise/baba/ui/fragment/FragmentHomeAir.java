@@ -73,6 +73,7 @@ public class FragmentHomeAir extends Fragment {
 	private OnCardMenuListener onCardMenuListener;
 	private List<View> views = new ArrayList<View>();
 	
+	private boolean isFirst = false;
 	public final static int POWER_ON = 1;
 	public final static int POWER_OFF = 0;
 
@@ -84,10 +85,12 @@ public class FragmentHomeAir extends Fragment {
 	public float dpdy = 0;// 电瓶电压
 	private Handler uiHander = null;
 	
-	
 	private AirApi airApi;//净化器新接口、
 	private int air_speed_count = 1;
 	private String device_id = "";
+	private View vv;
+	private String airModel = "";
+	
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -99,8 +102,11 @@ public class FragmentHomeAir extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		isFirst = true;
 		app = (AppApplication) getActivity().getApplication();
+		
 		uiHander = new Handler(handleCallBack);
+		
 		httpCarInfo = new HttpCarInfo(this.getActivity(), uiHander);
 		httpObd = new HttpGetObdData(this.getActivity(), uiHander);
 		httpAir = new HttpAir(this.getActivity(), uiHander);
@@ -160,6 +166,9 @@ public class FragmentHomeAir extends Fragment {
 		app.carDatas.get(carIndex).setSensitivity(sensitivity);
 	}
 
+	/**
+	 * 百度地图反解析
+	 */
 	OnGetGeoCoderResultListener listener = new OnGetGeoCoderResultListener() {
 		@Override
 		public void onGetReverseGeoCodeResult(ReverseGeoCodeResult result) {
@@ -186,6 +195,9 @@ public class FragmentHomeAir extends Fragment {
 		}
 	};
 
+	/**
+	 * @param index
+	 */
 	public void initLoaction(final int index) {
 		// 30秒定位，显示当前位子
 		new Thread(new Runnable() {
@@ -217,9 +229,13 @@ public class FragmentHomeAir extends Fragment {
 		this.onCardMenuListener = onCardMenuListener;
 	}
 
+	/**
+	 * 点击事件
+	 */
 	OnClickListener onClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
+			device_id = app.carDatas.get(carIndex).getDevice_id();
 			switch (v.getId()) {
 			case R.id.iv_air_menu:
 				if (onCardMenuListener != null) {
@@ -230,7 +246,7 @@ public class FragmentHomeAir extends Fragment {
 				SwitchImageView ivPower = (SwitchImageView) v;
 				boolean isChecked = ivPower.isChecked();
 				ivPower.setChecked(!isChecked);			
-				if(ivPower.isChecked()){
+				if(!ivPower.isChecked()){
 					airApi.setAirCommand(app.Token, device_id, AirCommand.AIR_POWER_OFF, AirCommand.SWITCH_COMMAND_MODEL);
 				}else{
 					airApi.setAirCommand(app.Token, device_id, AirCommand.AIR_POWER_ON , AirCommand.SWITCH_COMMAND_MODEL);
@@ -249,12 +265,8 @@ public class FragmentHomeAir extends Fragment {
 				break;
 				
 			case R.id.iv_air_level:
-				SwitchImageView ivLevel = (SwitchImageView) v;
-				ivLevel.setChecked(!ivLevel.isChecked());				
-
-				device_id = app.carDatas.get(carIndex).getDevice_id();
-				Toast.makeText(getActivity(),  "click", Toast.LENGTH_SHORT).show();
-
+				
+				Log.i("FragmentHomeAir", "ddddddd: " + air_speed_count);
 				if(air_speed_count == 1){
 					airApi.setAirCommand(app.Token, device_id, AirCommand.LOW_SPEED, AirCommand.SPEED_COMMAND_MODEL);
 				}
@@ -288,6 +300,9 @@ public class FragmentHomeAir extends Fragment {
 		}
 	};
 
+	/**
+	 * @param isChecked
+	 */
 	public void startAirAnimation(boolean isChecked) {
 		if (rolateAnimation != null) {
 			rolateAnimation.cancel();
@@ -371,6 +386,7 @@ public class FragmentHomeAir extends Fragment {
 			View v = LayoutInflater.from(getActivity()).inflate(
 					R.layout.page_air, null);
 			v.setTag(i);
+			vv = v;
 			Log.i("FragmentHomeAir", "initDataView"+i);
 			TextView tvCardTitle = (TextView) v
 					.findViewById(R.id.tv_card_title);
@@ -422,7 +438,7 @@ public class FragmentHomeAir extends Fragment {
 			public void run() {
 				while (isResumed) {
 					httpAir.requestAir(carIndex);
-					SystemClock.sleep(10000);
+					SystemClock.sleep(15000);
 				}
 			}
 		}).start();
@@ -467,12 +483,15 @@ public class FragmentHomeAir extends Fragment {
 		int airMode = bundle.getInt("air_mode");
 		String airTime = bundle.getString("air_time");
 		int airDuration = bundle.getInt("airDuration");
+		int airSpeed    = bundle.getInt("air_speed");
+		
+		
 		mAir.setAir(airValue);
 		mAir.setAirSwitch(airSwitch);
 		mAir.setAirMode(airMode);
 		mAir.setAirDuration(airDuration);
 		mAir.setAirTime(airTime);
-
+		mAir.setAirSpeed(airSpeed);
 		refreshValue(mAir);
 	}
 
@@ -495,6 +514,19 @@ public class FragmentHomeAir extends Fragment {
 				.findViewById(R.id.iv_air_level);
 		SwitchImageView ivAirSetting = (SwitchImageView) view
 				.findViewById(R.id.iv_air_setting);
+		
+		int air_speed = air.getAirSpeed();
+		String str_air_speed = getSpeedLevel(air_speed);
+		
+		if(isFirst){
+			isFirst = false;
+			if(air_speed > 2){
+				air_speed_count = 1;
+			}else{
+				air_speed_count =  air_speed + 1;
+			}	
+		}
+		
 		String desc = getAirDesc(air.getAir());
 		tvAirDesc.setText(desc);
 		tvAirValue.setText(air.getAir() + "");
@@ -506,13 +538,17 @@ public class FragmentHomeAir extends Fragment {
 		Log.i("FragmentHomeAir", "开关状态: " + vSwitch);
 		boolean isChecked = (vSwitch == POWER_ON) ? true : false;
 		ivAirPower.setChecked(isChecked);
-		String modeDesc = getModeDesc(air.getAirMode());
-		tvModeDesc.setText(modeDesc);
+		
+//		String modeDesc = getModeDesc(air.getAirMode());
+		airModel = getModeDesc(air.getAirMode());
+		tvModeDesc.setText(airModel + " " + str_air_speed);
+		
 		if (isChecked) {
 			tvModeDesc.setVisibility(View.VISIBLE);
 			if (rolateAnimation == null) {// 为空已经停止了，需要重新启动
 				startAirAnimation(isChecked);
 			}
+			
 		} else {
 			tvModeDesc.setVisibility(View.INVISIBLE);
 			if (rolateAnimation != null) {
@@ -542,6 +578,23 @@ public class FragmentHomeAir extends Fragment {
 			desc = "定时模式";
 		}
 		return desc;
+	}
+	
+	
+	public String getSpeedLevel(int speedLevel){
+		String speed = null;
+		
+		if(speedLevel == 1){
+			speed = "低速";
+			return speed;
+		}else if(speedLevel == 2){
+			speed = "中速";
+			return speed;
+		}else{
+			speed = "高速";
+			return speed;
+		}
+		
 	}
 
 	public Handler.Callback handleCallBack = new Handler.Callback() {
@@ -585,11 +638,23 @@ public class FragmentHomeAir extends Fragment {
 				String status_code = bundle_air_speed.getString("status_code");
 //				Log.i(TAG, "设置速度返回信息status_code：" + status_code + "==" + air_speed_count);
 				if("0".equals(status_code)){
+					
+					getActivity().runOnUiThread(new Runnable() {
+						
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							TextView tvModeDesc = (TextView) vv.findViewById(R.id.tv_mode_desc);
+							tvModeDesc.setText(airModel + " " + getSpeedLevel(air_speed_count));
+						}
+					});
+					
 					air_speed_count ++;
 					if(air_speed_count > 3){
 						air_speed_count = 1;
 					}
 				}
+				
 				break;
 
 			}

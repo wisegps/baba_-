@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -76,6 +77,8 @@ public class FuelActivity extends Activity {
 	public static final int DISTANCE = 1;// 里程
 	public static final int FEE = 2;// 费用
 	public static final int FUEL = 3;// 油耗
+	
+	private static final int PARSE_JSON = 1000;
 	
 	CarData carData;
 
@@ -312,6 +315,11 @@ public class FuelActivity extends Activity {
 			super.handleMessage(msg);
 			switch (msg.what) {
 			case getData:
+				
+//				sendEmptyMessage(PARSE_JSON);
+				jsonData(msg.obj.toString());
+				break;
+			case PARSE_JSON:
 				jsonData(msg.obj.toString());
 				break;
 			}
@@ -377,6 +385,9 @@ public class FuelActivity extends Activity {
 			} else {
 				avg_fuel = String.format("%.1f", jsonObject.getDouble("avg_fuel"));
 			}
+			
+	
+			
 			tv_avg_fuel.setText(avg_fuel);
 
 			// 根据类型分别显示相应的界面
@@ -419,11 +430,15 @@ public class FuelActivity extends Activity {
 				tv_title_map.setText("花费-油耗图");
 			}
 
+			
+			
+			
 			// 周月，需要画图
 			if (index != 0) {
 				Efuel.clear();
 				try {
 					JSONArray jsonArray = jsonObject.getJSONArray("fuel_data");
+					Log.i("FragmentHomeAir", "dddddddd: " + jsonArray);
 					for (int i = 0; i < jsonArray.length(); i++) {
 						float avg_fuel1 = 0.0f;
 						if (type == FUEL) {
@@ -436,7 +451,14 @@ public class FuelActivity extends Activity {
 						} else if (type == DISTANCE) {
 							avg_fuel1 = Float.valueOf(jsonArray.getJSONObject(i).getString("total_distance"));
 						} else {
-							avg_fuel1 = Float.valueOf(jsonArray.getJSONObject(i).getString("total_fee"));
+							
+							if(jsonArray.getJSONObject(i).has("total_fee")){
+								avg_fuel1 = 0.0f;
+								Log.i("FragmentHomeAir", "null ----null: ");
+							}else{
+								avg_fuel1 = Float.valueOf(jsonArray.getJSONObject(i).getString("total_fee"));
+								Log.i("FragmentHomeAir", "unnull ----unnull: ");
+							}
 						}
 						int rcv_day = Integer.valueOf(jsonArray.getJSONObject(i).getString("rcv_day").substring(8, 10));
 						String weekDate = jsonArray.getJSONObject(i).getString("rcv_day").substring(0, 10);
@@ -607,12 +629,12 @@ public class FuelActivity extends Activity {
 	List<RangeData> rangeDatas = new ArrayList<RangeData>();
 
 	public class RangeData {
-		String speed_text;
-		int percent;
-		String avg_fuel;
-		String fuel;
-		String distance;// 路程
-		String fee;// 花费
+		String speed_text = "";
+		int percent = 0;
+		String avg_fuel = "";
+		String fuel = "";
+		String distance = "";// 路程
+		String fee = "";// 花费
 
 		public String getDistance() {
 			return distance;

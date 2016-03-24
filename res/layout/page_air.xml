@@ -170,31 +170,31 @@
 
             <com.wise.baba.ui.widget.SwitchImageView
                 android:id="@+id/iv_air_power"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:src="@drawable/ico_air_power_off" />
 
             <com.wise.baba.ui.widget.SwitchImageView
                 android:id="@+id/iv_air_auto"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:src="@drawable/ico_air_auto_off" />
 
             <com.wise.baba.ui.widget.SwitchImageView
                 android:id="@+id/iv_air_setting"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:src="@drawable/ico_air_setting_off" />
 
             <com.wise.baba.ui.widget.SwitchImageView
                 android:id="@+id/iv_air_level"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/ico_air_level_off" />
+                android:src="@drawable/bg_air_selector" />
         </LinearLayout>
     </LinearLayout>
 

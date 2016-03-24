@@ -218,9 +218,14 @@ public class LetterActivity extends Activity implements IXListViewListener {
 		tv_friend = (TextView) findViewById(R.id.tv_friend);
 		tv_send = (TextView) findViewById(R.id.tv_send);
 		tv_send.setOnClickListener(onClickListener);
+		
 		friend_id = getIntent().getStringExtra("cust_id");
-		cust_name = getIntent().getStringExtra("cust_name");
+		cust_name = getIntent().getStringExtra("cust_name");		
 		logo = getIntent().getStringExtra("logo");
+		
+		if(cust_name.equals("叭叭小秘")){
+			cust_name = getResources().getString(R.string.personal_secretary);
+		}
 		tv_friend.setText(cust_name);
 		// 读取朋友对应的图片
 		if (logo != null) {

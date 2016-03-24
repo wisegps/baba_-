@@ -26,6 +26,11 @@ public class Air implements Serializable {
 	 * 定时时长
 	 */
 	public int airDuration;
+	
+	
+	public int airSpeed;
+
+	
 
 	public int getAir() {
 		return air;
@@ -67,4 +72,11 @@ public class Air implements Serializable {
 		this.airDuration = airDuration;
 	}
 
+	public int getAirSpeed() {
+		return airSpeed;
+	}
+
+	public void setAirSpeed(int airSpeed) {
+		this.airSpeed = airSpeed;
+	}
 }

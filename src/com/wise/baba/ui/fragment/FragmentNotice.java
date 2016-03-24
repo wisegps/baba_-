@@ -213,7 +213,7 @@ public class FragmentNotice extends Fragment implements IXListViewListener {
 	private void clickLetter(int position) {
 		NoticeData noticeData = noticeDatas.get(position);
 		Intent intent = new Intent(getActivity(), LetterActivity.class);
-		intent.putExtra("cust_id", noticeData.getFriend_id());
+		intent.putExtra("cust_id", noticeData.getFriend_id());	
 		intent.putExtra("cust_name", noticeData.getFriend_name());
 		intent.putExtra("logo", noticeData.getLogo());
 		startActivity(intent);
@@ -307,7 +307,12 @@ public class FragmentNotice extends Fragment implements IXListViewListener {
 				holder.tv_noti_number.setText("" + noticeData.getUnread_count());
 			}
 			holder.tv_content.setText(getFaceImage(noticeData.getContent()));
-			holder.tv_type.setText(noticeData.getFriend_name());
+			
+			if(noticeData.getFriend_name().equals("叭叭小秘")){
+				holder.tv_type.setText(getResources().getString(R.string.personal_secretary));
+			}else{
+				holder.tv_type.setText(noticeData.getFriend_name());
+			}
 			holder.ll_fm_notice.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
