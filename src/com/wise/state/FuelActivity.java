@@ -452,13 +452,26 @@ public class FuelActivity extends Activity {
 							avg_fuel1 = Float.valueOf(jsonArray.getJSONObject(i).getString("total_distance"));
 						} else {
 							
-							if(jsonArray.getJSONObject(i).has("total_fee")){
+
+							/*2016-05-20 修复为空的问题*/
+							Log.i("FragmentHomeAir", "---------" + jsonArray.toString());
+							
+							
+							if(jsonArray.getJSONObject(i).isNull("total_fee")){
 								avg_fuel1 = 0.0f;
 								Log.i("FragmentHomeAir", "null ----null: ");
 							}else{
 								avg_fuel1 = Float.valueOf(jsonArray.getJSONObject(i).getString("total_fee"));
 								Log.i("FragmentHomeAir", "unnull ----unnull: ");
 							}
+							
+//							if(jsonArray.getJSONObject(i).has("total_fee")){
+//								avg_fuel1 = 0.0f;
+//								Log.i("FragmentHomeAir", "null ----null: ");
+//							}else{
+//								avg_fuel1 = Float.valueOf(jsonArray.getJSONObject(i).getString("total_fee"));
+//								Log.i("FragmentHomeAir", "unnull ----unnull: ");
+//							}
 						}
 						int rcv_day = Integer.valueOf(jsonArray.getJSONObject(i).getString("rcv_day").substring(8, 10));
 						String weekDate = jsonArray.getJSONObject(i).getString("rcv_day").substring(0, 10);

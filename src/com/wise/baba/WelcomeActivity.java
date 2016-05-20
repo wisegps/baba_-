@@ -58,7 +58,7 @@ public class WelcomeActivity extends Activity implements TagAliasCallback {
 
 	WaitLinearLayout ll_wait;
 	AppApplication app;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -104,8 +104,8 @@ public class WelcomeActivity extends Activity implements TagAliasCallback {
 		MobclickAgent.setDebugMode(true);
 		FeedbackAgent agent = new FeedbackAgent(this);
 		agent.sync();
+		
 	}
-
 	String strData = "";
 	Handler handler = new Handler() {
 		@Override
@@ -141,6 +141,9 @@ public class WelcomeActivity extends Activity implements TagAliasCallback {
 				Constant.sharedPreferencesName, Context.MODE_PRIVATE);
 		String sp_account = preferences.getString(Constant.sp_account, "");
 		String sp_pwd = preferences.getString(Constant.sp_pwd, "");
+		
+		String sp_air_pwd = preferences.getString("air_pwd", "");
+		
 		new WaitThread().start();
 		if (sp_account.equals("")) {
 			JPushInterface.stopPush(getApplicationContext());

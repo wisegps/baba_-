@@ -38,10 +38,17 @@ import com.wise.baba.AppApplication;
 import com.wise.baba.CollectionActivity;
 import com.wise.baba.ManageActivity;
 import com.wise.baba.R;
+import com.wise.baba.WelcomeActivity;
 import com.wise.baba.app.Constant;
+import com.wise.baba.app.Msg;
 import com.wise.baba.biz.GetSystem;
 import com.wise.baba.biz.JsonData;
+import com.wise.baba.entity.Air;
+import com.wise.baba.entity.Weather;
 import com.wise.baba.net.NetThread;
+import com.wise.baba.newairapi.AirApi;
+import com.wise.baba.newairapi.AirMsg;
+import com.wise.baba.newairapi.BaseVolley;
 import com.wise.notice.NoticeActivity;
 import com.wise.remind.RemindListActivity;
 import com.wise.violation.TrafficActivity;
@@ -75,6 +82,9 @@ public class LoginActivity extends Activity implements PlatformActionListener, T
 	String pwd;
 
 	AppApplication app;
+	
+	private AirApi airApi;//净化器新接口、
+	private Handler uiHander = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +121,7 @@ public class LoginActivity extends Activity implements PlatformActionListener, T
 
 		findViewById(R.id.btn_show).setOnClickListener(onClickListener);// 演示账号登录
 		app.isTest = false;
+		
 	}
 
 	OnClickListener onClickListener = new OnClickListener() {
@@ -193,6 +204,7 @@ public class LoginActivity extends Activity implements PlatformActionListener, T
 			}
 			bt_login.setEnabled(false);
 			bt_login.setText("登录中...");
+	
 			String url = Constant.BaseUrl + "user_login?account=" + account + "&password=" + GetSystem.getM5DEndo(pwd);
 			Log.i("LoginActivity", url);
 			new NetThread.GetDataThread(handler, url, accountLogin).start();
@@ -225,6 +237,9 @@ public class LoginActivity extends Activity implements PlatformActionListener, T
 					Editor editor = preferences.edit();
 					editor.putString(Constant.sp_account, account);
 					editor.putString(Constant.sp_pwd, GetSystem.getM5DEndo(pwd));
+//					
+					editor.putString("air_pwd", pwd);
+	
 					editor.commit();
 				}
 				setJpush();

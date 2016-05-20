@@ -611,6 +611,10 @@ public class FragmentCarInfo extends Fragment {
 		if (bundle == null) {
 			return;
 		}
+		
+		
+		Log.d("BUG_CARINFO", bundle.toString());
+		
 		if (index < carViews.size()) {
 			CarView carView = carViews.get(index);
 			String total_fee = bundle.getString("total_fee");

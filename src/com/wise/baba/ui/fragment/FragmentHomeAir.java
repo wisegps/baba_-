@@ -3,7 +3,9 @@ package com.wise.baba.ui.fragment;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -34,6 +36,7 @@ import com.wise.baba.AirSettingActivity;
 import com.wise.baba.AppApplication;
 import com.wise.baba.R;
 import com.wise.baba.app.Const;
+import com.wise.baba.app.Constant;
 import com.wise.baba.app.Msg;
 import com.wise.baba.biz.HttpAir;
 import com.wise.baba.biz.HttpCarInfo;
@@ -90,6 +93,7 @@ public class FragmentHomeAir extends Fragment {
 	private String device_id = "";
 	private View vv;
 	private String airModel = "";
+	boolean isAirPowerOn = false;
 	
 
 	@Override
@@ -104,9 +108,8 @@ public class FragmentHomeAir extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 		isFirst = true;
 		app = (AppApplication) getActivity().getApplication();
-		
+	
 		uiHander = new Handler(handleCallBack);
-		
 		httpCarInfo = new HttpCarInfo(this.getActivity(), uiHander);
 		httpObd = new HttpGetObdData(this.getActivity(), uiHander);
 		httpAir = new HttpAir(this.getActivity(), uiHander);
@@ -135,19 +138,24 @@ public class FragmentHomeAir extends Fragment {
 		});
 		
 		
-		/**
-		 * 测试获取token
-		 */
-		airApi.getToken("690176725@qq.com", "123456");
-
+		
+		SharedPreferences preferences = getActivity().getSharedPreferences(
+				Constant.sharedPreferencesName, Context.MODE_PRIVATE);
+		String sp_account = preferences.getString(Constant.sp_account, "");
+		String sp_air_pwd = preferences.getString("air_pwd", "");
+	
+//		/**
+//		 * 获取token
+//		 */
+		airApi.getToken(sp_account, sp_air_pwd);
 	}
 
-	/**
-	 * 获取室外天气信息 getWeather
-	 */
-	public void getWeather() {
-		httpWeather.requestWeather();
-	}
+//	/**
+//	 * 获取室外天气信息 getWeather
+//	 */
+//	private void getWeather() {
+//		httpWeather.requestWeather();
+//	}
 
 	/** 设置GPS信息 **/
 	private void setGps(Bundle bundle) {
@@ -180,9 +188,7 @@ public class FragmentHomeAir extends Fragment {
 					int endIndex = adress.indexOf("市");
 					adress = adress.substring(startIndex, endIndex);
 					app.carDatas.get(carIndex).setCar_city(adress);
-
 					httpWeather.requestWeather(adress);
-
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -211,7 +217,6 @@ public class FragmentHomeAir extends Fragment {
 					if (index >= app.carDatas.size()) {
 						continue;
 					}
-
 					CarData carData = app.carDatas.get(index);
 					String device_id = carData.getDevice_id();
 					if (device_id == null || device_id.equals("")) {
@@ -220,7 +225,6 @@ public class FragmentHomeAir extends Fragment {
 					httpCarInfo.requestGps(device_id);
 					SystemClock.sleep(30000);
 				}
-
 			}
 		}).start();
 	}
@@ -245,13 +249,13 @@ public class FragmentHomeAir extends Fragment {
 			case R.id.iv_air_power:
 				SwitchImageView ivPower = (SwitchImageView) v;
 				boolean isChecked = ivPower.isChecked();
-				ivPower.setChecked(!isChecked);			
+				ivPower.setChecked(!isChecked);	
+				Log.i("FragmentHomeAir", "ddddddd: " + device_id);
 				if(!ivPower.isChecked()){
 					airApi.setAirCommand(app.Token, device_id, AirCommand.AIR_POWER_OFF, AirCommand.SWITCH_COMMAND_MODEL);
 				}else{
 					airApi.setAirCommand(app.Token, device_id, AirCommand.AIR_POWER_ON , AirCommand.SWITCH_COMMAND_MODEL);
 				}
-//				Log.i("FragmentHomeAir", "点击电源: " + ivPower.isChecked());
 				startAirAnimation(!isChecked);
 				break;
 			case R.id.iv_air_auto:
@@ -263,21 +267,22 @@ public class FragmentHomeAir extends Fragment {
 				}
 				airApi.setAirCommand(app.Token, device_id, air_mode , AirCommand.MODEL_SET_COMMAND_MODEL);
 				break;
-				
 			case R.id.iv_air_level:
 				
-				Log.i("FragmentHomeAir", "ddddddd: " + air_speed_count);
-				if(air_speed_count == 1){
-					airApi.setAirCommand(app.Token, device_id, AirCommand.LOW_SPEED, AirCommand.SPEED_COMMAND_MODEL);
+				if(isAirPowerOn){
+					Log.i("FragmentHomeAir", "ddddddd: " + air_speed_count);
+					if(air_speed_count == 1){
+						airApi.setAirCommand(app.Token, device_id, AirCommand.LOW_SPEED, AirCommand.SPEED_COMMAND_MODEL);
+					}
+					if(air_speed_count == 2){
+						airApi.setAirCommand(app.Token, device_id, AirCommand.MIDDLE_SPEED, AirCommand.SPEED_COMMAND_MODEL);
+					}
+					if(air_speed_count == 3){
+						airApi.setAirCommand(app.Token, device_id, AirCommand.HIGHT_SPEED, AirCommand.SPEED_COMMAND_MODEL);
+					}
+				}else{
+					Toast.makeText(getActivity(), "净化器卫士没有启动", Toast.LENGTH_SHORT).show();
 				}
-				
-				if(air_speed_count == 2){
-					airApi.setAirCommand(app.Token, device_id, AirCommand.MIDDLE_SPEED, AirCommand.SPEED_COMMAND_MODEL);
-				}
-				if(air_speed_count == 3){
-					airApi.setAirCommand(app.Token, device_id, AirCommand.HIGHT_SPEED, AirCommand.SPEED_COMMAND_MODEL);
-				}
-
 				break;
 			case R.id.iv_air_setting:
 				Intent intent = new Intent();
@@ -356,6 +361,8 @@ public class FragmentHomeAir extends Fragment {
 		isResumed = true;
 		super.onResume();
 		refreshAir();
+		initLoaction(carIndex);
+		httpObd.requestAir(carIndex);
 	}
 
 	/** 滑动车辆布局 **/
@@ -366,7 +373,6 @@ public class FragmentHomeAir extends Fragment {
 			Log.i("FragmentHomeAir", "initDataView");
 			return;
 		}
-
 		if (carIndex >= carDataList.size()) {
 			
 			carIndex = 0;
@@ -382,7 +388,6 @@ public class FragmentHomeAir extends Fragment {
 				Log.i("FragmentHomeAir", carDataList.get(i).getDevice_id());
 				continue;
 			}
-			
 			View v = LayoutInflater.from(getActivity()).inflate(
 					R.layout.page_air, null);
 			v.setTag(i);
@@ -400,11 +405,8 @@ public class FragmentHomeAir extends Fragment {
 					.findViewById(R.id.iv_air_level);
 
 			View flytAirDialView = v.findViewById(R.id.flytAirDialView);
-
 			ImageView ivAirMenu = (ImageView) v.findViewById(R.id.iv_air_menu);
-
 			CarData carData = carDataList.get(i);
-
 			tvCardTitle.setText(carData.getNick_name());
 
 			ivAirSettting.setOnClickListener(onClickListener);
@@ -424,8 +426,6 @@ public class FragmentHomeAir extends Fragment {
 			carIndex = (Integer) hs_air.getChildAt(pageIndex).getTag();
 			hs_air.snapToScreen(pageIndex);
 		}
-		
-
 	}
 
 	/**
@@ -485,7 +485,6 @@ public class FragmentHomeAir extends Fragment {
 		int airDuration = bundle.getInt("airDuration");
 		int airSpeed    = bundle.getInt("air_speed");
 		
-		
 		mAir.setAir(airValue);
 		mAir.setAirSwitch(airSwitch);
 		mAir.setAirMode(airMode);
@@ -535,11 +534,12 @@ public class FragmentHomeAir extends Fragment {
 		 * 开关控制
 		 */
 		int vSwitch = air.getAirSwitch();
-		Log.i("FragmentHomeAir", "开关状态: " + vSwitch);
+		Log.i("FragmentHomeAir", "开关状态: " + vSwitch + "--" + "速度： " + str_air_speed) ;
 		boolean isChecked = (vSwitch == POWER_ON) ? true : false;
+		isAirPowerOn = isChecked;
+		ivAirLevel.setChecked(isAirPowerOn);
 		ivAirPower.setChecked(isChecked);
 		
-//		String modeDesc = getModeDesc(air.getAirMode());
 		airModel = getModeDesc(air.getAirMode());
 		tvModeDesc.setText(airModel + " " + str_air_speed);
 		
@@ -664,12 +664,12 @@ public class FragmentHomeAir extends Fragment {
 	
 
 	public String getAirDesc(int air) {
-		String air_desc = "优";
-		if (air <= 1300) {
+		String air_desc = "良";
+		if (air <= 60) {
 			air_desc = "优";
-		} else if (air > 1300 && air <= 1500) {
+		} else if (air > 60 && air <= 80) {
 			air_desc = "良";
-		} else if (air > 1500 && air <= 2000) {
+		} else if (air > 80 && air <= 120) {
 			air_desc = "中";
 		} else {
 			air_desc = "差";

@@ -17,6 +17,15 @@
             android:contentDescription="@string/app_name"
             android:src="@drawable/icon_baba"
             android:visibility="gone" />
+        
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#ffffff"
+            android:textSize="48sp"
+            android:textStyle="bold"
+            android:text="空气卫士"
+            />
 
         <com.wise.baba.ui.widget.WaitLinearLayout
             android:id="@+id/ll_wait"

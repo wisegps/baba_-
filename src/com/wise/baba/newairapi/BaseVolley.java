@@ -1,4 +1,5 @@
 package com.wise.baba.newairapi;
+
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
@@ -15,12 +16,17 @@ import com.android.volley.toolbox.Volley;
 /**
  * 本类目的是全局共用一个RequestQueue，统一网络请求入口 
  * 不同实例对象用不同的handler处理返回结果
- * @author c
+ * @author wu
  */
 public class BaseVolley {
+	
 	public static RequestQueue mQueue;
 	public Handler handler;
 
+	
+	public BaseVolley(){
+		super();
+	}
 	/**
 	 * 构造方法，传入handler
 	 * 
@@ -54,7 +60,23 @@ public class BaseVolley {
 		request.setShouldCache(false);
 		mQueue.add(request);
 	}
-
+	
+	
+	/**
+	 * @param url 根据Wistorm API请求规则拼接好的url
+	 * @param onSuccess 连接成功回调
+	 * @param onError   连接失败回调
+	 */
+	public void request(String url, Listener<String> onSuccess,ErrorListener onError) {
+		if(mQueue==null){
+			Log.i("BaseVolley", "RequestQueue还木有初始化，请先调用init方法");
+			return ;
+		}
+		Request request = new StringRequest(url, onSuccess, onError);
+		request.setShouldCache(false);
+		mQueue.add(request);
+	}
+	
 	/**
 	 * Volley 请求返回的监听器
 	 * 

@@ -658,11 +658,11 @@
         <!--
 		debug：ENAit7WmjvYO0DmxKMOU4CLx
 		正     式1：DhT4kz88wR3r5yCl6tQCpaNW
-		本机1：5FOLjIdm0ZfvnnrEmaMtIpF5
+		本机1：OI7lFCsSZssUM6tFiT7FsfnvBY4rNfUE
         -->
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="5FOLjIdm0ZfvnnrEmaMtIpF5" />
+            android:value="DhT4kz88wR3r5yCl6tQCpaNW" />
     </application>
 
     <instrumentation

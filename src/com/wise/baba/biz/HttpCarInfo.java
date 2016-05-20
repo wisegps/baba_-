@@ -243,6 +243,7 @@ public class HttpCarInfo {
 	/**
 	 * 获取当月数据 requestMonthData
 	 */
+	String UUU = "";
 	public void requestMonthData(String device_id, String gasNo) {
 		// Log.i("HttpCarInfo", "获取当月数据");
 		String Month = GetSystem.GetNowMonth().getMonth();
@@ -250,11 +251,15 @@ public class HttpCarInfo {
 		String endMonth = GetSystem.getMonthLastDay(Month);
 
 		String url = "";
+		
 		try {
 			url = Constant.BaseUrl + "device/" + device_id
 					+ "/total?auth_code=" + app.auth_code + "&start_day="
 					+ startMonth + "&end_day=" + endMonth + "&city="
 					+ URLEncoder.encode(app.City, "UTF-8") + "&gas_no=" + gasNo;
+			
+			UUU = url;
+			
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
@@ -262,6 +267,10 @@ public class HttpCarInfo {
 		Listener<String> listener = new Response.Listener<String>() {
 			public void onResponse(String response) {
 				// 返回数据，发送到工作子线程去解析
+				
+				
+				Log.d("BUG_CARINFO", UUU + "\n" + response);
+				
 				Message msg = workHandler.obtainMessage();
 				msg.what = Msg.Get_Car_Month_Data;
 				msg.obj = response;
