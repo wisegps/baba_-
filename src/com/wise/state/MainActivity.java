@@ -68,7 +68,8 @@ public class MainActivity extends FragmentActivity implements
 		showFragment("home");
 		registerReceiver();
 		checkIndication();
-		UmengUpdateAgent.update(MainActivity.this);
+		/*2016-05-20 修改*/
+//		UmengUpdateAgent.update(MainActivity.this);//安全卫士 不用更新
 	}
 	
 	@Override
@@ -80,12 +81,12 @@ public class MainActivity extends FragmentActivity implements
 		
 		// 初始化导航，必须
 		BaiduNaviManager.getInstance().initEngine(this, getSdcardDir(),
-				mNaviEngineInitListener, new LBSAuthManagerListener() {
-					@Override
-					public void onAuthResult(int status, String msg) {
+			mNaviEngineInitListener, new LBSAuthManagerListener() {
+				@Override
+				public void onAuthResult(int status, String msg) {
 
-					}
-				});
+				}
+			});
 	}
 
 
